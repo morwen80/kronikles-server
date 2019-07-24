@@ -64,12 +64,3 @@ server.delete("/notes/:id", (req, res) => {
    db.notes.remove({ _id: noteId });
    res.json(db.notes.find());
 });
-
-
-
-// add first note
-if (!db.notes.find().length) {
-   const note = { id: "tt0110357", name: "The Lion King", genre: "animation" };
-   db.notes.save(note);
-}
-console.log(db.notes.find());
