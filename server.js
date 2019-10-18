@@ -2,8 +2,17 @@ const express = require('express');
 const server = express();
 const body_parser = require('body-parser');
 
+server.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+  next();
+});
+
+
 const db = require('diskdb');
-db.connect('./data', ['notes']);
+db.connect('./data', ['kronikles']);
 
 server.use(body_parser.json());
 
@@ -11,7 +20,7 @@ server.get("/json", (req, res) => {
    res.json({ message: "Hello world" });
 });
 
-const port = 4000;
+const port = process.env.PORT || 3000
 
 server.listen(port, () => {
     console.log(`Server listening at ${port}`);
@@ -19,48 +28,48 @@ server.listen(port, () => {
 
 
 // CREATE
-server.post("/notes", (req, res) => {
+server.post("/kronikles", (req, res) => {
    const note = req.body;
    // add new note to db
-   db.notes.save(note);
+   db.kronikles.save(note);
    // return updated list
-   res.json(db.notes.find());
+   res.json(db.kronikles.find());
 });
 
 
-// READ ONE NOTE
-server.get("/notes/:id", (req, res) => {
+// READ ONE KRONIKLE
+server.get("/kronikles/:id", (req, res) => {
    const noteId = req.params.id;
-   const notes = db.notes.find({ _id: noteId });
-   if (notes.length) {
-      res.json(notes);
+   const kronikles = db.kronikles.find({ _id: noteId });
+   if (kronikles.length) {
+      res.json(kronikles);
    } else {
       res.json({ message: `note ${noteId} doesn't exist` })
    }
 });
 
 
-// READ ALL THE NOTES
-server.get("/notes", (req, res) => {
-   res.json(db.notes.find());
+// READ ALL THE KRONIKLES
+server.get("/kronikles", (req, res) => {
+   res.json(db.kronikles.find());
 });
 
 
-// UPDATE
-server.put("/notes/:id", (req, res) => {
+// UPDATE A KRONIKLE
+server.patch("/kronikles/:id", (req, res) => {
    const noteId = req.params.id;
    const note = req.body;
 
-   db.notes.update({ _id: noteId }, note);
+   db.kronikles.update({ _id: noteId }, note);
 
-   res.json(db.notes.find());
+   res.json(db.kronikles.find());
 });
 
 
-// DELETE
-server.delete("/notes/:id", (req, res) => {
+// DELETE A KRONIKLE
+server.delete("/kronikles/:id", (req, res) => {
    const noteId = req.params.id;
 
-   db.notes.remove({ _id: noteId });
-   res.json(db.notes.find());
+   db.kronikles.remove({ _id: noteId });
+   res.json(db.kronikles.find());
 });
